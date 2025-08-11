@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, #0f0e0e, #0e0d0d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 350px;
+            margin: 10px;
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }
+
+        input {
+            padding: 8px;
+            width: 80%;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px;
+            background: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 80%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #080505;
+        }
+
+        table {
+            width: 100%;
+            color: rgb(176, 39, 176);
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid rgb(167, 35, 149);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="subject-count-form">
+    <h2>Cumulative Grade Point Average</h2>
+    <h3>Calculator</h3>
+    <input type="number" id="subjectCount" placeholder="Enter No Of Subjects" min="1">
+    <button onclick="generateSubjectForm()">Submit</button>
+</div>
+
+<div class="container" id="subjects-form" style="display:none;">
+    <h3>Subject Codes</h3>
+    <div id="subjects-input"></div>
+    <button onclick="calculateCGPA()">Calculate</button>
+</div>
+
+<div class="container" id="result" style="display:none;">
+    <h3>Cumulative Grade Point Average</h3>
+    <table id="result-table">
+        <tr>
+            <th>Subject Name</th>
+            <th>Credits</th>
+            <th>Grade</th>
+        </tr>
+    </table>
+    <h3 id="cgpa-output"></h3>
+</div>
+
+<script>
+    const gradePoints = {
+        'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'P': 4, 'F': 0
+    };
+
+    function generateSubjectForm() {
+        let count = document.getElementById("subjectCount").value;
+        if (count < 1) {
+            alert("Enter a valid subject count");
+            return;
+        }
+
+        let formHTML = "";
+        for (let i = 1; i <= count; i++) {
+            formHTML += `
+                <input type="text" placeholder="Enter Subject ${i} Name" id="name${i}">
+                <input type="number" placeholder="Enter Subject ${i} Credits" id="credit${i}" min="1">
+                <input type="text" placeholder="Enter Subject ${i} Grade" id="grade${i}">
+                <br>
+            `;
+        }
+
+        document.getElementById("subjects-input").innerHTML = formHTML;
+        document.getElementById("subject-count-form").style.display = "none";
+        document.getElementById("subjects-form").style.display = "block";
+    }
+
+    function calculateCGPA() {
+        let totalCredits = 0;
+        let totalPoints = 0;
+        let table = document.getElementById("result-table");
+
+        table.innerHTML = `
+            <tr>
+                <th>Subject Name</th>
+                <th>Credits</th>
+                <th>Grade</th>
+            </tr>
+        `;
+
+        let subjectCount = document.getElementById("subjects-input").children.length / 4;
+
+        for (let i = 1; i <= subjectCount; i++) {
+            let name = document.getElementById(`name${i}`).value;
+            let credits = parseFloat(document.getElementById(`credit${i}`).value);
+            let grade = document.getElementById(`grade${i}`).value.toUpperCase();
+
+            if (!gradePoints.hasOwnProperty(grade)) {
+                alert(`Invalid grade for Subject ${i}`);
+                return;
+            }
+
+            totalCredits += credits;
+            totalPoints += gradePoints[grade] * credits;
+
+            let row = `<tr><td>${name}</td><td>${credits}</td><td>${grade}</td></tr>`;
+            table.innerHTML += row;
+        }
+
+        let cgpa = (totalPoints / totalCredits).toFixed(2);
+        document.getElementById("cgpa-output").innerText = `Your CGPA is ${cgpa}`;
+        document.getElementById("subjects-form").style.display = "none";
+        document.getElementById("result").style.display = "block";
+    }
+</script>
+
+</body>
+</html>
+s
